@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "250119USA"
+scenario: "250120AGO"
 
 # Temporal Parameters 
 startYear: 2021
@@ -27,7 +27,7 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "USA"
+  - "AGO"
  
 
 # Set to True if transmission should be included
