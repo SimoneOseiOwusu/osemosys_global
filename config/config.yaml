@@ -1,8 +1,8 @@
 # Scenario Name 
-scenario: "India"
+scenario: "250401"
 
 # Temporal Parameters 
-startYear: 2021
+startYear: 2023
 endYear: 2050
 daytype: False
 dayparts:
@@ -17,8 +17,59 @@ seasons:
 timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
-geographic_scope:
-  - "IND"
+geographic_scope: 
+  - "DZA" 
+  - "AGO" 
+  - "BEN"
+  - "BWA" 
+  - "BFA"  
+  - "TCD"
+  - "COM"
+  - "COG"
+  - "COD" 
+  - "KEN" 
+  - "MDG"
+  - "MWI" 
+  - "MOZ" 
+  - "NAM"  
+  - "TZA"
+  - "UGA" 
+  - "ZMB"
+  - "ZWE"
+  - "ZAF"
+  - "BDI"
+  - "CIV"
+  - "TGO"
+  - "TUN" 
+  - "SDN" 
+  - "SSD" 
+  - "SOM" 
+  - "SLE" 
+  - "SYC" 
+  - "SEN" 
+  - "STP" 
+  - "RWA" 
+  - "NGA" 
+  - "NER" 
+  - "CPV" 
+  - "CMR" 
+  - "CAF"  
+  - "SWZ"
+  - "ETH"   
+  - "GAB" 
+  - "GMB"
+  - "DJI"
+  - "EGY" 
+  - "GNQ" 
+  - "GIN"    
+  - "GNB"
+  - "MAR" 
+  - "LSO" 
+  - "LBY" 
+  - "MRT"  
+  - "ESH" 
+  - "MUS" 
+  - "LBR" 
 
 # Set to True if transmission should be included
 crossborderTrade: True
@@ -50,7 +101,7 @@ emission_penalty:
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # EXAMPLE:  - ["CO2", "IND", 2020, 2050, 2.1]
 # where VALUE is in M$/MT CO2
- - ["CO2", "IND", 2021, 2050, 2.1]
+# - ["CO2", "IND", 2021, 2050, 2.1]
 
 # Investment Parameters 
 no_invest_technologies: 

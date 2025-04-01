@@ -156,8 +156,8 @@ param ReserveMargin{r in REGION, y in YEAR};
 param RETagTechnology{r in REGION, t in TECHNOLOGY, y in YEAR} binary;
 param RETagFuel{r in REGION, f in FUEL, y in YEAR} binary;
 param REMinProductionTarget{r in REGION, y in YEAR};
-#
-#########                        Emissions & Penalties                #############
+#   
+#########                        Emissions & Penalties                ############
 #
 param EmissionActivityRatio{r in REGION, t in TECHNOLOGY, e in EMISSION, m in MODE_OF_OPERATION, y in YEAR};
 param EmissionsPenalty{r in REGION, e in EMISSION, y in YEAR};
@@ -271,6 +271,8 @@ var NumberOfNewTechnologyUnits{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0,int
 var NewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0;
 #var AccumulatedNewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR} >= 0;
 var TotalCapacityAnnual{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
+var RetireCapacity {r in REGION, t in TECHNOLOGY, y in YEAR} >= 0; 
+var StrandedCost {r in REGION, t in TECHNOLOGY, y in YEAR} >= 0;  
 #
 #########                    Activity Variables                         #############
 #
@@ -341,15 +343,23 @@ var AnnualTechnologyEmissionsPenalty{r in REGION, t in TECHNOLOGY, y in YEAR};
 ######################
 #
 
-minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR} 
-    ((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} 
-        NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*FixedCost[r,t,y] + 
-        sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} 
-            RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y]) / DiscountFactorMid[r,y] + 
-            CapitalCost[r,t,y] * NewCapacity[r,t,y] * CapitalRecoveryFactor[r,t] * PvAnnuity[r,t] / DiscountFactor[r,y] + 
-            DiscountedTechnologyEmissionsPenalty[r,t,y] - DiscountedSalvageValue[r,t,y]) + 
-            sum{r in REGION, s in STORAGE, y in YEAR} (CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] / DiscountFactor[r,y] - 
-            DiscountedSalvageValueStorage[r,s,y]);
+minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR} (
+    (
+      ((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy]) 
+       + ResidualCapacity[r,t,y]) * FixedCost[r,t,y]
+      + sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE}
+          RateOfActivity[r,l,t,m,y]*YearSplit[l,y]*VariableCost[r,t,m,y]
+    ) / DiscountFactorMid[r,y]
+    + CapitalCost[r,t,y] * NewCapacity[r,t,y] * CapitalRecoveryFactor[r,t] * PvAnnuity[r,t]
+      / DiscountFactor[r,y]
+    + DiscountedTechnologyEmissionsPenalty[r,t,y]
+    - DiscountedSalvageValue[r,t,y]
+    + (StrandedCost[r,t,y] * RetireCapacity[r,t,y] / DiscountFactorMid[r,y])  <-- ADDED
+  )
+  + sum{r in REGION, s in STORAGE, y in YEAR} (
+    CapitalCostStorage[r,s,y] * NewStorageCapacity[r,s,y] / DiscountFactor[r,y]
+    - DiscountedSalvageValueStorage[r,s,y]
+  );
 
 #minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR} 
 #    ((((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} 
@@ -370,12 +380,34 @@ minimize cost: sum{r in REGION, t in TECHNOLOGY, y in YEAR}
 #########               Capacity Adequacy A                     #############
 #
 #s.t. CAa1_TotalNewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR}:AccumulatedNewCapacity[r,t,y] = sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy];
-s.t. CAa2_TotalAnnualCapacity{r in REGION, t in TECHNOLOGY, y in YEAR}: ((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y]) = TotalCapacityAnnual[r,t,y];
+s.t. CAa2_TotalAnnualCapacity{r in REGION, t in TECHNOLOGY, y in YEAR}:
+    (
+        sum {yy in YEAR : y - yy < OperationalLife[r,t] && y - yy >= 0} NewCapacity[r,t,yy]
+      + ResidualCapacity[r,t,y]
+      - RetireCapacity[r,t,y]              <-- SUBTRACT RETIREMENT
+    )
+    = TotalCapacityAnnual[r,t,y];
+
 #s.t. CAa3_TotalActivityOfEachTechnology{r in REGION, t in TECHNOLOGY, l in TIMESLICE, y in YEAR}: sum{m in MODEperTECHNOLOGY[t]} RateOfActivity[r,l,t,m,y] = RateOfTotalActivity[r,t,l,y];
 s.t. CAa4_Constraint_Capacity{r in REGION, l in TIMESLICE, t in TECHNOLOGY, y in YEAR}: sum{m in MODEperTECHNOLOGY[t]} RateOfActivity[r,l,t,m,y] <= ((sum{yy in YEAR: y-yy < OperationalLife[r,t] && y-yy>=0} NewCapacity[r,t,yy])+ ResidualCapacity[r,t,y])*CapacityFactor[r,t,l,y]*CapacityToActivityUnit[r,t];
 s.t. CAa5_TotalNewCapacity{r in REGION, t in TECHNOLOGY, y in YEAR: CapacityOfOneTechnologyUnit[r,t,y]<>0}: CapacityOfOneTechnologyUnit[r,t,y]*NumberOfNewTechnologyUnits[r,t,y] = NewCapacity[r,t,y];
 #
 # Note that the PlannedMaintenance equation below ensures that all other technologies have a capacity great enough to at least meet the annual average.
+#
+#########       RetireCapacity Limit                                 #############
+#
+s.t. RCapLimit {r in REGION, t in TECHNOLOGY, y in YEAR}:
+    RetireCapacity[r,t,y]
+    <=
+    (
+      sum {yy in YEAR: (y - yy < OperationalLife[r,t]) and (y - yy >= 0)}
+      NewCapacity[r,t,yy]
+    )
+     - (
+      sum {yy in YEAR: (y - yy >= 0)}
+      RetireCapacity[r,t,yy]
+    )
+    + ResidualCapacity[r,t,y];
 #
 #########               Capacity Adequacy B                         #############
 #
@@ -553,6 +585,14 @@ s.t. RE4_EnergyConstraint{r in REGION, y in YEAR}:REMinProductionTarget[r,y]*sum
 #s.t. RE2_TechIncluded{r in REGION, y in YEAR}: sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE, t in TECHNOLOGY, f in FUEL} RateOfActivity[r,l,t,m,y]*OutputActivityRatio[r,t,f,m,y] * YearSplit[l,y]*RETagTechnology[r,t,y] = TotalREProductionAnnual[r,y];
 #s.t. RE3_FuelIncluded{r in REGION, y in YEAR}: sum{l in TIMESLICE, f in FUEL} sum{(m,t) in MODExTECHNOLOGYperFUELout[f]} RateOfActivity[r,l,t,m,y]*OutputActivityRatio[r,t,f,m,y]*RETagFuel[r,f,y] = RETotalProductionOfTargetFuelAnnual[r,y];
 #s.t. RE5_FuelUseByTechnologyAnnual{r in REGION, t in TECHNOLOGY, f in FUEL, y in YEAR}: sum{m in MODEperTECHNOLOGY[t], l in TIMESLICE} RateOfActivity[r,l,t,m,y]*InputActivityRatio[r,t,f,m,y]*YearSplit[l,y] = UseByTechnologyAnnual[r,t,f,y];
+# 
+#########                   RetireCapacity Constraint                ##############
+#
+s.t. RetirementBalance {r in REGION, t in TECHNOLOGY, y in YEAR}:
+    RetireCapacity[r,t,y] 
+    <= 
+    (sum {yy in YEAR: y-yy < OperationalLife[r,t] && y-yy >= 0} NewCapacity[r,t,yy]) 
+    + ResidualCapacity[r,t,y];
 #
 #########                   Emissions Accounting                ##############
 #
@@ -566,6 +606,11 @@ s.t. E4_EmissionsPenaltyByTechnology{r in REGION, t in TECHNOLOGY, y in YEAR}: s
 #s.t. E6_EmissionsAccounting1{r in REGION, e in EMISSION, y in YEAR}: sum{l in TIMESLICE, t in TECHNOLOGY, m in MODEperTECHNOLOGY[t]: EmissionActivityRatio[r,t,e,m,y]<>0} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y] = AnnualEmissions[r,e,y];
 #s.t. E7_EmissionsAccounting2{r in REGION, e in EMISSION}: sum{l in TIMESLICE, t in TECHNOLOGY, m in MODEperTECHNOLOGY[t], y in YEAR: EmissionActivityRatio[r,t,e,m,y]<>0} EmissionActivityRatio[r,t,e,m,y]*RateOfActivity[r,l,t,m,y]*YearSplit[l,y] + ModelPeriodExogenousEmission[r,e] = ModelPeriodEmissions[r,e];
 #
+#########                   StrandedAssets_Calculation                ##############
+#
+s.t. StrandedAssets_Calculation {r in REGION, t in TECHNOLOGY, y in YEAR}:
+   StrandedCost[r,t,y] = CapitalCost[r,t,y] * RetireCapacity[r,t,y] * 
+    ((OperationalLife[r,t] - (y - min{yy in YEAR} min(yy) + 1)) / OperationalLife[r,t]); 
 #
 ###########################################################################################
 #
