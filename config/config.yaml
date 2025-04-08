@@ -1,8 +1,8 @@
 # Scenario Name 
-scenario: "India"
+scenario: "SAU"
 
 # Temporal Parameters 
-startYear: 2021
+startYear: 2023
 endYear: 2050
 daytype: False
 dayparts:
@@ -18,18 +18,18 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "IND"
+  - "SAU"
 
 # Set to True if transmission should be included
-crossborderTrade: True
+crossborderTrade: False
 
 # Set to True if existing transmission capacities should be included
 # from the Global Transmission Database (Brinkerink et al., 2024).
-transmission_existing: True
+transmission_existing: False
 
 # Set to True if planned transmission capacities should be included
 # from the Global Transmission Database (Brinkerink et al., 2024).
-transmission_planned: True
+transmission_planned: False
 
 # Set to True if existing storage capacities should be included
 # from the Global Energy Storage Database (DOE/Sandia).
@@ -50,7 +50,7 @@ emission_penalty:
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # EXAMPLE:  - ["CO2", "IND", 2020, 2050, 2.1]
 # where VALUE is in M$/MT CO2
- - ["CO2", "IND", 2021, 2050, 2.1]
+# - ["CO2", "IND", 2021, 2050, 2.1]
 
 # Investment Parameters 
 no_invest_technologies: 
