@@ -18,7 +18,7 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "TUK"
+  - "TUR"
 
 # Set to True if transmission should be included
 crossborderTrade: False
