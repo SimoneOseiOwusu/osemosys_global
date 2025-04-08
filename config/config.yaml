@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "Turkey"
+scenario: "India"
 
 # Temporal Parameters 
 startYear: 2023
@@ -18,7 +18,7 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "TUR"
+  - "IND"
 
 # Set to True if transmission should be included
 crossborderTrade: False
