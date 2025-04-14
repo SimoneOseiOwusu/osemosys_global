@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "Indiav6"
+scenario: "250414ChinaV2"
 
 # Temporal Parameters 
 startYear: 2023
@@ -18,7 +18,7 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "IND"
+  - "CHN"
 
 # Set to True if transmission should be included
 crossborderTrade: False
