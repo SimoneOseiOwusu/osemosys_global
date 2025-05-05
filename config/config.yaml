@@ -1,5 +1,5 @@
 # Scenario Name 
-scenario: "India"
+scenario: "SouthAfrica"
 
 # Temporal Parameters 
 startYear: 2021
@@ -18,7 +18,7 @@ timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "IND"
+  - "ZAF"
 
 # Set to True if transmission should be included
 crossborderTrade: True
