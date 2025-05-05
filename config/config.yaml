@@ -188,6 +188,7 @@ emission_limit:
 # previous target years. A combination of TYPE targets can be set per EMISSION and
 # COUNTRY yet only a single target per YEAR.
 # EXAMPLE: - ["CO2", "IND", "LINEAR", 2050, 0]
+ - ['CO2', 'ZAF', 'LINEAR', 2050, 0]
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
