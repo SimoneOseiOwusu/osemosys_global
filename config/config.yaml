@@ -1,24 +1,27 @@
 # Scenario Name 
-scenario: "India"
+scenario: "GhanaBase2060DV"
 
 # Temporal Parameters 
 startYear: 2021
-endYear: 2050
+endYear: 2060
 daytype: False
 dayparts:
 # daypart : [start_hour (inclusive), end_hour (exclusive)]
   D1: [1, 13]
   D2: [13, 25]
+
 seasons:
 # season : [month 1, month 2, ...] (all inclusive)
-  S1: [1, 2, 3, 4, 5, 6]
-  S2: [7, 8, 9, 10, 11, 12]
+  S1: [1, 2, 3]
+  S2: [4, 5, 6]
+  S3: [7, 8, 9]
+  S4: [10, 11, 12]
 
 timeshift: 0 # value between -11 and 12
   
 # Spatial Parameters 
 geographic_scope:
-  - "IND"
+  - "GHA"
 
 # Set to True if transmission should be included
 crossborderTrade: True
@@ -50,7 +53,7 @@ emission_penalty:
 # - [EMISSION, COUNTRY, START_YEAR, END_YEAR, VALUE]
 # EXAMPLE:  - ["CO2", "IND", 2020, 2050, 2.1]
 # where VALUE is in M$/MT CO2
- - ["CO2", "IND", 2021, 2050, 2.1]
+
 
 # Investment Parameters 
 no_invest_technologies: 
@@ -63,12 +66,13 @@ no_invest_technologies:
   - "GEO"
   - "BIO"
   - "PET"
+  - "WOF"
 
 # Result Parameters 
 results_by_country: True
 
 # solver parameters
-solver: "cbc" # cbc, cplex, gurobi
+solver: "gurobi" # cbc, cplex, gurobi
 
 user_defined_capacity:
 # technology: [capacity, 
@@ -188,6 +192,7 @@ emission_limit:
 # previous target years. A combination of TYPE targets can be set per EMISSION and
 # COUNTRY yet only a single target per YEAR.
 # EXAMPLE: - ["CO2", "IND", "LINEAR", 2050, 0]
+# - ["CO2", "GHA", "LINEAR", 2060, 0]
 
 min_generation_factors:
 # TECHNOLOGY: [VALUE, COUNTRY, YEAR]
